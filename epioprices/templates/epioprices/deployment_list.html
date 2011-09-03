@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>prices.ep.io</h1>
+<table>
+	<tbody>
+		{% for object in object_list %}
+			<tr>
+				<th><h2>{{ object.name }}</h2></td>
+				<th class="cost_field"><h2>$ {{ object.total_cost }}</h2></td>
+			</tr>
+			<tr>
+				<td>Bandwidth ({{ object.bandwidth_usage }} GB)</td>
+				<td class="cost_field"><strong>$ {{ object.bandwidth_cost }}</strong></td>
+			</tr>
+			<tr>
+				<td>Storage ({{ object.storage_usage }} GB)</td>
+				<td class="cost_field">$ <strong>{{ object.storage_cost }}</strong></td>
+			</tr>
+			{% for instance in object.instance_set.all %}
+				<tr>
+					<td>
+						{{ instance.amount }} x {{ instance.instance_type }} with {{ instance.memory_usage }} MB
+					</td>
+					<td class="cost_field">
+						$ {{ instance.total_cost }}
+					</td>
+				</tr>
+			{% endfor %}
+		{% endfor %}
+	</tbody>
+</table>
+{% endblock %}
