@@ -27,8 +27,17 @@ class Deployment(models.Model):
     def instance_cost(self, duration=MONTH):
         return sum([i.total_cost(duration) for i in self.instance_set.all()])
 
+    def first_instance_rebate(self, duration=MONTH):
+        """
+        we assume the first instance rebate applies to the first web instance only.
+        """
+        for instance in self.instance_set.filter(instance_type='web'):
+            return (-1) * (instance.cost(duration=duration, amount=1) / 2.0)
+        return -0.0
+
     def total_cost(self, duration=MONTH):
-        return self.bandwidth_cost(duration) + self.storage_cost(duration) + self.instance_cost(duration)
+        return sum([self.bandwidth_cost(duration), self.storage_cost(duration),
+                    self.instance_cost(duration)])
 
 class Instance(models.Model):
     deployment = models.ForeignKey(Deployment)
@@ -36,9 +45,10 @@ class Instance(models.Model):
     instance_type = models.CharField(choices=INSTANCE_TYPE_CHOICES, max_length=128)
     memory_usage = models.FloatField(default=128, help_text='memory usage in MB')
 
-    def cost(self, duration=MONTH):
+    def cost(self, duration=MONTH, amount=None):
+        amount = amount or self.amount
         if self.calculator:
-            return self.calculator(memory_usage=self.memory_usage).price(duration=duration)
+            return self.calculator(memory_usage=self.memory_usage).price(duration=duration) * amount
         else:
             return 0.0
 

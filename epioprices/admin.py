@@ -9,12 +9,15 @@ class InstanceInline(admin.TabularInline):
 
 
 class DeploymentAdmin(admin.ModelAdmin):
-    readonly_fields = ('bandwidth_cost', 'storage_cost', 'instance_cost', 'total_cost')
+    readonly_fields = ('bandwidth_cost', 'storage_cost', 'instance_cost', 'first_instance_rebate', 'total_cost')
     list_display = ('name', 'storage_usage', 'bandwidth_usage', ) + readonly_fields
     inlines = (InstanceInline,)
     fieldsets = (
         (None, {'fields': ('name', ('storage_usage', 'bandwidth_usage'))}),
-        (None, {'fields': ('total_cost', ('bandwidth_cost', 'storage_cost', 'instance_cost',))}),
+        (None, {'fields': ('total_cost',
+                           ('bandwidth_cost', 'storage_cost', 'instance_cost',),
+                           'first_instance_rebate',
+            )}),
         ('description', {'fields': ('description',), 'classes': ('collapse',)}),
     )
 
@@ -33,6 +36,10 @@ class DeploymentAdmin(admin.ModelAdmin):
     def instance_cost(self, obj):
         return u'<strong style="font-size: 18px;">$ %s</strong>' % obj.instance_cost()
     instance_cost.allow_tags = True
+
+    def first_instance_rebate(self, obj):
+        return u'<strong style="font-size: 18px;">$ %s</strong>' % obj.first_instance_rebate    ()
+    first_instance_rebate.allow_tags = True
 
 
 admin.site.register(Deployment, DeploymentAdmin)

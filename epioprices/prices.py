@@ -15,13 +15,18 @@ class BaseInstance(object):
     def __init__(self, memory_usage=None):
         self.memory_usage = memory_usage or self.free_memory_limit
 
-    def price(self, duration=None):
+    def price(self, duration=None, is_first_instance=False):
         duration = duration or MONTH
 
         if self.memory_usage <= self.free_memory_limit:
             return 0.0
         hourly_price = (self.memory_usage / self.hourly_rate_memory) * self.hourly_rate
-        return hourly_price * (duration.total_seconds()/3600)
+
+        if is_first_instance:
+            rebate_factor = 0.5
+        else:
+            rebate_factor = 1
+        return hourly_price * (duration.total_seconds()/3600) * rebate_factor
 
 
 class WebInstance(BaseInstance):
