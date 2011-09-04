@@ -2,9 +2,9 @@
 
 {% block content %}
 <h1>prices.ep.io</h1>
+{% for object in object_list %}
 <table>
 	<tbody>
-		{% for object in object_list %}
 			<tr>
 				<th><h2>{{ object.name }}</h2></td>
 				<th class="cost_field"><h2>$ {{ object.total_cost }}</h2></td>
@@ -27,7 +27,13 @@
 					</td>
 				</tr>
 			{% endfor %}
-		{% endfor %}
+			<tr>
+				<td>First instance rebate</td>
+				<td class="cost_field">$ <strong>{{ object.first_instance_rebate }}</strong></td>
+			</tr>
 	</tbody>
 </table>
+<br />
+{% endfor %}
+
 {% endblock %}
